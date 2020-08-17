@@ -1,0 +1,64 @@
+1.安装beanstalk服务
+
+yum install beanstalkd --enablerepo=epel
+
+参考：https://www.jianshu.com/p/d07433c3ed07
+
+--------------------------------------------------------------------------------------------------------
+
+2.安装pheanstalk
+
+composer require pda/pheanstalk
+
+这是php操作beanstalk类库
+
+--------------------------------------------------------------------------------------------------------
+
+3.beanstalk 启动服务命名
+
+beanstalkd -l 0.0.0.0 -p 11300 -b 日志文件路径 -F
+
+日志文件路径：例如 /www/wwwroot/beanstalk/binlog(需提前建好)
+
+-l 监听ip地址
+-p beanstalk服务端口默认11300 beanstalk界面管理使用时需开启此端口
+-b 存放log日志,beanstalk异常关闭时就是采用日志文件路径中的blog文件进行数据持久化(非常重要)
+后台挂起程序则使用例如 nohup beanstalkd -l 0.0.0.0 -p 11300 -b /www/wwwroot/beanstalk/binlog -F &
+
+若服务器起重启则需要进行开机自启动配置
+在etc/rc.d/ini.d中加入启动shell脚本
+注意shell脚本中需要在#!/bin/bash后加一句 #chkconfig: 2345 10 90
+然后保存
+再执行 chkconfig --add yourfilename
+      chkconfig  yourfilename  on
+开机自启动就配置完成
+
+--------------------------------------------------------------------------------------------------------
+
+4.客户端消费程序是采用swoole 多进程的进程池处理
+
+需安装swoole v4.0.*以上版本 php 版本 7.3.*以上
+
+--------------------------------------------------------------------------------------------------------
+
+此程序是直接运行php start.php help 根据提示操作即可 
+
+注意消费程序是多个的直接在app目录下开发属于自己的消费程序即可，不能在一个消费程序中去订阅多个tub,会出现无法预料的错误
+都是采用的tub做标识
+
+
+2020.8.8
+新增消费程序配置文件config/worker.ini   和 beanstalk.ini
+
+添加生成消费程序文件create.php采用swoole http 协程
+此文件就是一个http服务只需要nohup php /www/wwwroot/test-beanstalk/create.php &
+
+
+
+
+
+
+
+
+
+

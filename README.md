@@ -1,2 +1,1 @@
-# beanstalk2.0
-beanstalk消费程序
+beanstalkd 消费
